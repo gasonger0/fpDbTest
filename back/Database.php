@@ -19,7 +19,7 @@ class Database implements DatabaseInterface
         foreach ($args as $k => $v) {
             switch (gettype($v)) {
                 case 'string':
-                    break;
+                    $v = addslashes($v);
                 case 'integer':
                     break;
                 case 'double':
@@ -73,12 +73,12 @@ class Database implements DatabaseInterface
                     if(is_array($args[$k])) {
                         $query = substr_replace($query, $this->arrayToId($args[$k]), $pos, strlen($v));
                     } else {
-                        $query = substr_replace($query, "`{$args[$k]}`", $pos, strlen($v));
+                        $query = substr_replace($query, "`" . addslashes($args[$k]) . "`", $pos, strlen($v));
                     }
                     break;
                 case " ":
                     if(gettype($args[$k]) == 'string') {
-                        $query = substr_replace($query, "'{$args[$k]}'", $pos, strlen($v[0]));
+                        $query = substr_replace($query, "'" . addslashes($args[$k]) . "'", $pos, strlen($v[0]));
                     } else if (gettype($args[$k]) == 'bool') {
                         $query = substr_replace($query, (int)$args[$k], $pos, strlen($v[0]));
                     } else {
@@ -104,7 +104,7 @@ class Database implements DatabaseInterface
     private function arrayToId(array $array) : string{
         $str = '';
         foreach($array as $item) {
-            $str .= "`{$item}`, ";
+            $str .= "`" . addslashes($item) . "`, ";
         }
         return substr($str, 0, -2);
     }
